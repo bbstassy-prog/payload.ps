@@ -1,0 +1,39 @@
+# Базовый payload - просто показывает сообщение
+function Show-Message {
+    $message = @"
+    ========================================
+    Демонстрационный Payload
+    Время: $(Get-Date)
+    Пользователь: $env:USERNAME
+    Компьютер: $env:COMPUTERNAME
+    ========================================
+"@
+    
+    # Записываем в лог файл
+    $logPath = "$env:TEMP\system_log.txt"
+    $message | Out-File -FilePath $logPath -Append
+    
+    # Также выводим (в реальном сценарии это было бы скрыто)
+    Write-Host $message -ForegroundColor Magenta
+}
+
+# Основная функция
+function Main {
+    # Скрываем окно (если запущено напрямую)
+    $windowStyle = 'Hidden'
+    
+    # Выполняем полезную нагрузку
+    Show-Message
+   
+    # Сохраняем информацию о запуске
+    $info = @{
+        'LastRun' = Get-Date
+        'User' = $env:USERNAME
+        'Computer' = $env:COMPUTERNAME
+    }
+    
+    $info | ConvertTo-Json | Out-File "$env:TEMP\run_info.json"
+}
+
+# Запускаем main функцию
+Main
